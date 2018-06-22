@@ -3,15 +3,16 @@
 import argparse
 import re
 
-#Command line Debugging
+# Command line Debugging
 DEBUG_LINE = "\033[36m%-16s \033[35m|\033[0m %s"
 
-#Indent space to use to format the code
+# Indent space to use to format the code
 INDENT = '    '
+
 
 def _print_debug(k, v):
     print DEBUG_LINE % (k, v)
-    #pass
+    # pass
 
 def main():
 
@@ -38,8 +39,10 @@ def main():
                 indent_change = 0
 
 # Used to know when to send a line forward or backwards for formatting
-                startmatch = re.findall(r'[{(]', line)
-                endmatch = re.findall(r'[})]', line)
+                cleanline = re.sub(r'(#.*$)', ' ', line)
+                startmatch = re.findall(r'[{(]', cleanline)
+                endmatch = re.findall(r'[})]', cleanline)
+                curlyout = re.search(r'(^[)}])(.*)([{(])', cleanline)
 
 # This section is to set the direction to send the line
                 if len(endmatch) > len(startmatch):
@@ -55,6 +58,9 @@ def main():
                 if indent_change < 0:
                     indent_level += indent_change
 
+                if curlyout:
+                    indent_level += -1
+
                 line = (INDENT * indent_level) + line
                 _print_debug("Edited Line ", line)
 
@@ -65,7 +71,10 @@ def main():
                 if indent_change > 0:
                     indent_level += indent_change
 
-#Command line Debugging
+                if curlyout:
+                    indent_level += 1
+
+# Command line Debugging
                 _print_debug("Ending Indent", indent_level)
 
 if __name__ == '__main__':
