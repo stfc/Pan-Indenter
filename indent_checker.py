@@ -10,9 +10,9 @@ DEBUG_LINE = "\033[36m%-16s \033[35m|\033[0m %s"
 INDENT = '    '
 
 
-def _print_debug(k, v):
-    print DEBUG_LINE % (k, v)
-    # pass
+# def _print_debug(k, v):
+#     print DEBUG_LINE % (k, v)
+#     pass
 
 def main():
 
@@ -20,6 +20,7 @@ def main():
     parser = argparse.ArgumentParser(description='Indent Checker')
     parser.add_argument('input', type=str, help='Input File')
     parser.add_argument('output', type=str, help='Output File')
+    parser.add_argument('--debug', action='store_true', help='Enable debug logging.')
     args = parser.parse_args()
 
     indent_level = 0
@@ -29,7 +30,13 @@ def main():
             for line_number, line in enumerate(file_input):
 
 # Command line Debugging
-                print '\033[1;32m-\033[0m' * 100
+                if args.debug:
+                    print '\033[1;32m-\033[0m' * 100
+                    def _print_debug(k, v):
+                        print DEBUG_LINE % (k, v)
+                else:
+                    def _print_debug(k, v):
+                        pass
                 _print_debug("Line Number ", line_number)
                 _print_debug("Indent Level", indent_level)
                 _print_debug("Unedited line", line.rstrip())
