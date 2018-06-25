@@ -83,7 +83,7 @@ def main():
                 linenew = (INDENT * indent_level) + line
                 _print_debug("Edited Line ", line)
                 if linenew != oldline:
-                    failedlines = False
+                    failedlines = True
                     if args.diff:
                         print("")
                         print("Line %-5d:%s" % (line_number, line))
