@@ -4,7 +4,7 @@ python:
 
 # Assume bundler is being used, therefore
 # the `install` step will run `bundle install` by default.
-script: ./pan_indent_checker.py Example-Before.pan Travis-Test.pan && diff Example-After.pan Travis-Test.pan
+script: ./pan_indent_checker.py Example-Before.pan --output Travis-Test.pan && diff Example-After.pan Travis-Test.pan
 
 
 cache: bundler
