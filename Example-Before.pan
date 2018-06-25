@@ -15,6 +15,7 @@ foreach(k;directory;CONDOR_DIRECTORIES) {
  'type', 'd',
   );
  };
+
  SELF;
 };
 

@@ -114,6 +114,7 @@ def main():
                 indent_level += -1
 
             linenew = (INDENT * indent_level) + line
+            linenew = linenew.rstrip()
             _print_debug("Edited Line", linenew)
             if linenew != oldline:
                 failedlines = True

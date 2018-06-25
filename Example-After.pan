@@ -15,6 +15,7 @@ npush(escape(CONDOR_LOCAL_CONFIG_FILE),
             'type', 'd',
         );
     };
+
     SELF;
 };
 
