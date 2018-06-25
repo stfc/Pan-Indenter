@@ -17,9 +17,32 @@
 import argparse
 import re
 import sys
-# Command line Debugging
-DEBUG_LINE = "\033[36m%-16s \033[35m|\033[0m %s"
 
+
+
+
+def supports_color():
+    """
+    Returns True if the running system's terminal supports color, and False
+    otherwise.
+    """
+    plat = sys.platform
+    supported_platform = plat != 'Pocket PC' and (plat != 'win32' or
+                                                  'ANSICON' in os.environ)
+    # isatty is not always implemented, #6223.
+    is_a_tty = hasattr(sys.stdout, 'isatty') and sys.stdout.isatty()
+    if not supported_platform or not is_a_tty:
+        return False
+    return True
+
+
+# Command line Debugging
+DEBUGNOCOLOUR = "%-16s | %s"
+DEBUGCOLOR = "\033[36m%-16s \033[35m|\033[0m %s"
+if supports_color():
+    DEBUG_LINE = DEBUGCOLOR
+if not supports_color():
+    DEBUG_LINE = DEBUGNOCOLOUR
 # Indent space to use to format the code
 INDENT = '    '
 
@@ -44,7 +67,12 @@ def main():
 
 # Command line Debugging
             if args.debug:
-                print '\033[1;32m-\033[0m' * 100
+                DEBUGLINECOLOUR = '\033[1;32m-\033[0m' * 100
+                DEBUGLINENOCOLOUR = '-' * 100
+                if supports_color():
+                    print(DEBUGLINECOLOUR)
+                if not supports_color():
+                    print(DEBUGLINENOCOLOUR)
 
                 def _print_debug(k, v, newline=True):
                     sys.stdout.write(DEBUG_LINE % (k, v))
