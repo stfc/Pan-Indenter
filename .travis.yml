@@ -7,6 +7,7 @@ python:
 script:
  - ./pan_indent_checker.py Example-Before.pan --output Travis-Test.pan && diff Example-After.pan Travis-Test.pan
  - ./pan_indent_checker.py Example-After.pan
+ - ./pan_indent_checker.py Example-Before.pan && exit 1 || exit 0
 
 
 cache: bundler
