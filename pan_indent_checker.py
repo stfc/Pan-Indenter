@@ -35,73 +35,75 @@ def main():
     if args.output:
         file_output = open(args.output, 'w+')
     else:
-        file_output = None
+        file_output = sys.stdout
     indent_level = 0
 
     with open(args.input, 'r+') as file_input:
-            for line_number, line in enumerate(file_input):
+        for line_number, line in enumerate(file_input):
 
 # Command line Debugging
-                if args.debug:
-                    print '\033[1;32m-\033[0m' * 100
-                    def _print_debug(k, v):
-                        print DEBUG_LINE % (k, v)
-                else:
-                    def _print_debug(k, v):
-                        pass
-                _print_debug("Line Number ", line_number)
-                _print_debug("Indent Level", indent_level)
-                _print_debug("Unedited line", line.rstrip())
-                oldline = line.rstrip()
+            if args.debug:
+                print '\033[1;32m-\033[0m' * 100
+                def _print_debug(k, v, newline=True):
+                    sys.stdout.write(DEBUG_LINE % (k, v))
+                    if newline:
+                        sys.stdout.write("\n")
+            else:
+                def _print_debug(k, v, newline=True):
+                    pass
+            _print_debug("Line Number ", line_number)
+            _print_debug("Indent Level", indent_level)
+            _print_debug("Unedited line", line.rstrip())
+            oldline = line.rstrip()
 # Strips line and resets indent_change
-                line = line.strip()
-                indent_change = 0
+            line = line.strip()
+            indent_change = 0
 
 # Used to know when to send a line forward or backwards for formatting
-                cleanline = re.sub(r'(#.*$)', ' ', line)
-                startmatch = re.findall(r'[{(]', cleanline)
-                endmatch = re.findall(r'[})]', cleanline)
-                curlyout = re.search(r'(^[)}])(.*)([{(])', cleanline)
+            cleanline = re.sub(r'(#.*$)', ' ', line)
+            startmatch = re.findall(r'[{(]', cleanline)
+            endmatch = re.findall(r'[})]', cleanline)
+            curlyout = re.search(r'(^[)}])(.*)([{(])', cleanline)
 
 # This section is to set the direction to send the line
-                if len(endmatch) > len(startmatch):
-                    indent_change = -1
+            if len(endmatch) > len(startmatch):
+                indent_change = -1
 
-                if len(startmatch) > len(endmatch):
-                    indent_change = 1
+            if len(startmatch) > len(endmatch):
+                indent_change = 1
 
 # Command line Debugging
-                _print_debug("Indent Change", indent_change)
+            _print_debug("Indent Change", indent_change)
 
 # This is the section that applies the change
-                if indent_change < 0:
-                    indent_level += indent_change
+            if indent_change < 0:
+                indent_level += indent_change
 
-                if curlyout:
-                    indent_level += -1
+            if curlyout:
+                indent_level += -1
 
-                linenew = (INDENT * indent_level) + line
-                _print_debug("Edited Line ", line)
-                if linenew != oldline:
-                    failedlines = True
-                    if args.diff:
-                        print("")
-                        print("Line %-5d:%s" % (line_number, line))
-                        print("should be :%s" % linenew)
+            linenew = (INDENT * indent_level) + line
+            _print_debug("Edited Line", "", newline=False)
+            if linenew != oldline:
+                failedlines = True
+                if args.diff:
+                    print("")
+                    print("Line %-5d:%s" % (line_number, line))
+                    print("should be :%s" % linenew)
 
 # Writes to file
-                if file_output:
-                    file_output.write(linenew + "\n")
-                    file_output.flush()
+            if file_output:
+                file_output.write(linenew + "\n")
+                file_output.flush()
 
-                if indent_change > 0:
-                    indent_level += indent_change
+            if indent_change > 0:
+                indent_level += indent_change
 
-                if curlyout:
-                    indent_level += 1
+            if curlyout:
+                indent_level += 1
 
 # Command line Debugging
-                _print_debug("Ending Indent", indent_level)
+            _print_debug("Ending Indent", indent_level)
     if failedlines:
         sys.exit(1)
     else:
