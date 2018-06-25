@@ -4,7 +4,7 @@ python:
 
 # Assume bundler is being used, therefore
 # the `install` step will run `bundle install` by default.
-script: indent_checker.py Example-Before.txt Travis-Test.txt && diff -q Example-After.txt Travis-Test.txt
+script: ./indent_checker.py Example-Before.txt Travis-Test.txt && diff -q Example-After.txt Travis-Test.txt
 
 
 cache: bundler
