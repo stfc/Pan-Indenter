@@ -52,7 +52,7 @@ def main():
                 _print_debug("Line Number ", line_number)
                 _print_debug("Indent Level", indent_level)
                 _print_debug("Unedited line", line.rstrip())
-
+                oldline = line.rstrip()
 # Strips line and resets indent_change
                 line = line.strip()
                 indent_change = 0
@@ -82,11 +82,12 @@ def main():
 
                 linenew = (INDENT * indent_level) + line
                 _print_debug("Edited Line ", line)
-                if linenew != line and args.diff:
-                    print("")
-                    print("Line %-5d:%s" % (line_number, line))
-                    print("should be :%s" % linenew)
+                if linenew != oldline:
                     failedlines = True
+                    if args.diff:
+                        print("")
+                        print("Line %-5d:%s" % (line_number, line))
+                        print("should be :%s" % linenew)
 
 # Writes to file
                 if file_output:
