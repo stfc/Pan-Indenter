@@ -44,13 +44,16 @@ def main():
 # Command line Debugging
             if args.debug:
                 print '\033[1;32m-\033[0m' * 100
+
                 def _print_debug(k, v, newline=True):
                     sys.stdout.write(DEBUG_LINE % (k, v))
                     if newline:
                         sys.stdout.write("\n")
+
             else:
                 def _print_debug(k, v, newline=True):
                     pass
+
             _print_debug("Line Number ", line_number)
             _print_debug("Indent Level", indent_level)
             _print_debug("Unedited line", line.rstrip())
@@ -83,7 +86,7 @@ def main():
                 indent_level += -1
 
             linenew = (INDENT * indent_level) + line
-            _print_debug("Edited Line", "", newline=False)
+            _print_debug("Edited Line", linenew)
             if linenew != oldline:
                 failedlines = True
                 if args.diff:
@@ -108,5 +111,7 @@ def main():
         sys.exit(1)
     else:
         sys.exit(0)
+
+
 if __name__ == '__main__':
     main()
