@@ -1,0 +1,12 @@
+language: python
+python:
+- 3.5
+
+# Assume bundler is being used, therefore
+# the `install` step will run `bundle install` by default.
+script: indent_checker.py Example-Before.txt Travis-Test.txt && diff -q Example-Before.txt Travis-Test.txt && echo "Test worked sucessfully" || echo "Test worked unsucessfully" 
+
+
+cache: bundler
+
+sudo: false
