@@ -32,9 +32,10 @@ def main():
     parser.add_argument('--debug', action='store_true', help='Enable debug logging.')
     parser.add_argument('--diff', action='store_true', help='Enable diff showing.')
     args = parser.parse_args()
+    file_output = None
     if args.output:
         file_output = open(args.output, 'w+')
-    else:
+    elif not args.debug:
         file_output = sys.stdout
     indent_level = 0
 
