@@ -17,3 +17,13 @@ foreach(k;directory;CONDOR_DIRECTORIES) {
  };
  SELF;
 };
+
+variable test = {
+if ( is_defined(test) ) {
+debug(test + ': configuring testing monitoring');
+    test;
+} else {
+    debug(test + ': testing monitoring disabled');
+undef;
+    }
+};
