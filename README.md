@@ -1,14 +1,14 @@
-Indent Checker
+Pan Indenter
 =====================
 
 What is it?
-* This program is an indent checker made in python to check files for incorrect or non-wanted indents in a program.
+* This program is a  Pan Indenter made in python to check .pan files for incorrect or un-wanted indents in a file.
 
 What is needed for this?
 * Python
 
 Why use it?
-* Correctly lays out code that is not indent based like python to make it easier to read.
+* Correctly lays out pan code to make it easier to read.
 
 How to install?
 * No installation needed only downloading the file.
@@ -22,9 +22,10 @@ What are the advantages of this program and why did I bother making it??
 
 How to use it?
 * Run it in a command line
-Use the args:
--i [file-name] for the input file
+Optional args:
 -o [file-name] for the output file
+--debug for debugging options
+--diff to see the differences
 
 Anything else I should know?
 * Not right now, the program is simple in how it works.

@@ -16,7 +16,7 @@
 
 import argparse
 import re
-
+import sys
 # Command line Debugging
 DEBUG_LINE = "\033[36m%-16s \033[35m|\033[0m %s"
 
@@ -24,18 +24,21 @@ DEBUG_LINE = "\033[36m%-16s \033[35m|\033[0m %s"
 INDENT = '    '
 
 def main():
-
+    failedlines = False
 # Arg parser settings for commandlines
     parser = argparse.ArgumentParser(description='Indent Checker')
     parser.add_argument('input', type=str, help='Input File')
-    parser.add_argument('output', type=str, help='Output File')
+    parser.add_argument('-o', '--output', type=str, help='Output File')
     parser.add_argument('--debug', action='store_true', help='Enable debug logging.')
+    parser.add_argument('--diff', action='store_true', help='Enable diff showing.')
     args = parser.parse_args()
-
+    if args.output:
+        file_output = open(args.output, 'w+')
+    else:
+        file_output = None
     indent_level = 0
 
     with open(args.input, 'r+') as file_input:
-        with open(args.output, 'w+') as file_output:
             for line_number, line in enumerate(file_input):
 
 # Command line Debugging
@@ -77,12 +80,18 @@ def main():
                 if curlyout:
                     indent_level += -1
 
-                line = (INDENT * indent_level) + line
+                linenew = (INDENT * indent_level) + line
                 _print_debug("Edited Line ", line)
+                if linenew != line and args.diff:
+                    print("")
+                    print("Line %-5d:%s" % (line_number, line))
+                    print("should be :%s" % linenew)
+                    failedlines = True
 
 # Writes to file
-                file_output.write(line + "\n")
-                file_output.flush()
+                if file_output:
+                    file_output.write(linenew + "\n")
+                    file_output.flush()
 
                 if indent_change > 0:
                     indent_level += indent_change
@@ -92,6 +101,9 @@ def main():
 
 # Command line Debugging
                 _print_debug("Ending Indent", indent_level)
-
+    if failedlines:
+        sys.exit(1)
+    else:
+        sys.exit(0)
 if __name__ == '__main__':
     main()
