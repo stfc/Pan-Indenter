@@ -27,8 +27,7 @@ def supports_color():
     otherwise.
     """
     plat = sys.platform
-    supported_platform = plat != 'Pocket PC' and (plat != 'win32' or
-                                                  'ANSICON' in os.environ)
+    supported_platform = plat != 'Pocket PC' and (plat != 'win32' or 'ANSICON' in os.environ)
     # isatty is not always implemented, #6223.
     is_a_tty = hasattr(sys.stdout, 'isatty') and sys.stdout.isatty()
     if not supported_platform or not is_a_tty:
@@ -67,8 +66,8 @@ def main():
 
 # Command line Debugging
             if args.debug:
-                DEBUGLINECOLOUR = '\033[1;32m-\033[0m' * 100
                 DEBUGLINENOCOLOUR = '-' * 100
+                DEBUGLINECOLOUR = '\033[1;32m' + DEBUGLINENOCOLOUR + '\033[0m'
                 if supports_color():
                     print(DEBUGLINECOLOUR)
                 if not supports_color():
