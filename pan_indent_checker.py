@@ -45,7 +45,6 @@ def supports_color():
 
 
 def _print_debug(k, v):
-    print(DEBUG_DIVIDER)
     print(DEBUG_LINE % (k, v))
 
 
@@ -74,6 +73,7 @@ def main():
 
             # Command line Debugging
             if args.debug:
+                print(DEBUG_DIVIDER)
                 _print_debug("Line Number ", line_number)
                 _print_debug("Indent Level", indent_level)
                 _print_debug("Unedited line", line_raw.rstrip())
