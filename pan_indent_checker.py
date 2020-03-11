@@ -23,7 +23,7 @@ from colorama import Fore, Style, init as colorama_init
 
 
 # Command line Debugging
-DEBUG_LINE = Fore.CYAN + "%-16s " + Fore.MAGENTA + "|" + Fore.YELLOW + " %s" + Fore.RESET
+DEBUG_LINE = Fore.CYAN + "%-16s %3s " + Fore.MAGENTA + "|" + Fore.YELLOW + " %s" + Fore.RESET
 DEBUG_DIVIDER = Style.DIM + '-' * 100 + Style.NORMAL
 
 # Indentation to use when formatting
@@ -44,8 +44,8 @@ def supports_color():
     return True
 
 
-def _print_debug(k, v):
-    print(DEBUG_LINE % (k, v))
+def _print_debug(k, v, c=""):
+    print(DEBUG_LINE % (k, c[:3], v))
 
 
 def main():
