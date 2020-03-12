@@ -29,6 +29,8 @@ DEBUG_DIVIDER = Style.DIM + '-' * 100 + Style.NORMAL
 # Indentation to use when formatting
 INDENT = '    '
 
+RE_COMMENT = re.compile(r'(?:#|@{.*?}).*')
+
 
 def supports_color():
     """
@@ -83,7 +85,7 @@ def main():
             indent_change = 0
 
             # Determine whether to send the line forwards or backwards for formatting
-            cleanline = re.sub(r'(#.*$)', ' ', line_stripped)
+            cleanline = RE_COMMENT.sub('# IGNORED COMMENT', line_stripped)
             startmatch = re.findall(r'[{(]', cleanline)
             endmatch = re.findall(r'[})]', cleanline)
             curlyout = re.search(r'(^[)}])(.*)([{(])', cleanline)
