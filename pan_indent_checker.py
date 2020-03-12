@@ -29,6 +29,7 @@ DEBUG_DIVIDER = Style.DIM + '-' * 100 + Style.NORMAL
 # Indentation to use when formatting
 INDENT = '    '
 
+RE_ANNOTATION = re.compile(r'@\w*{.*?}', re.S)
 RE_COMMENT = re.compile(r'(?:#|@{.*?}).*')
 RE_STRING = re.compile(r'''('.*?'|".*?"(?<!\\"))''')
 
@@ -49,6 +50,18 @@ def supports_color():
 
 def _print_debug(k, v, c=""):
     print(DEBUG_LINE % (k, c[:3], v))
+
+
+def find_annotation_blocks(text):
+    """Find multi-line annotation blocks in a block of text"""
+    result = []
+    annotations = RE_ANNOTATION.finditer(text)
+    for annotation in annotations:
+        start_char, end_char = annotation.span()
+        start_line = text[:start_char].count('\n') + 1
+        end_line = start_line + text[start_char:end_char].count('\n')
+        result += range(start_line, end_line + 1)
+    return result
 
 
 def main():
@@ -72,48 +85,62 @@ def main():
     colorama_init(strip=(not supports_color()))
 
     with open(args.input, 'r+') as file_input:
-        for line_number, line_raw in enumerate(file_input):
+        # Find annotations and reset pointer
+        annotations = find_annotation_blocks(file_input.read())
+        file_input.seek(0)
+
+        # Iterate over lines
+        for line_number, line_raw in enumerate(file_input, 1):
+            in_annotation = line_number in annotations
 
             # Command line Debugging
             if args.debug:
                 print(DEBUG_DIVIDER)
-                _print_debug("Line Number ", line_number)
-                _print_debug("Indent Level", indent_level)
-                _print_debug("Unedited line", line_raw.rstrip())
+                debug_comment = ""
+                if in_annotation:
+                    debug_comment = "A"
+                _print_debug("Line Number ", line_number, debug_comment)
+                _print_debug("Indent Level", indent_level, debug_comment)
+                _print_debug("Unedited line", line_raw.rstrip(), debug_comment)
 
             line_old = line_raw.rstrip()
+            line_new = line_old
             line_stripped = line_raw.strip()
             indent_change = 0
 
-            # Determine whether to send the line forwards or backwards for formatting
-            cleanline = RE_STRING.sub("'IGNORED_STRING'", line_stripped)
-            cleanline = RE_COMMENT.sub('# IGNORED COMMENT', cleanline)
-            startmatch = re.findall(r'[{(]', cleanline)
-            endmatch = re.findall(r'[})]', cleanline)
-            curlyout = re.search(r'(^[)}])(.*)([{(])', cleanline)
+            if not in_annotation:
+                # Determine whether to send the line forwards or backwards for formatting
+                cleanline = RE_STRING.sub("'IGNORED_STRING'", line_stripped)
+                cleanline = RE_COMMENT.sub('# IGNORED COMMENT', cleanline)
+                startmatch = re.findall(r'[{(]', cleanline)
+                endmatch = re.findall(r'[})]', cleanline)
+                curlyout = re.search(r'(^[)}])(.*)([{(])', cleanline)
+                if args.debug:
+                    _print_debug("Cleaned line", cleanline)
 
-            # Set the direction to send the line
-            if len(endmatch) > len(startmatch):
-                indent_change = -1
 
-            if len(startmatch) > len(endmatch):
-                indent_change = 1
+                # Set the direction to send the line
+                if len(endmatch) > len(startmatch):
+                    indent_change = -1
+
+                if len(startmatch) > len(endmatch):
+                    indent_change = 1
+
+                if args.debug:
+                    _print_debug("Indent Change", indent_change)
+
+                # Apply indent reductions before printing
+                if indent_change < 0:
+                    indent_level += indent_change
+
+                if curlyout:
+                    indent_level += -1
+
+                line_new = (INDENT * indent_level) + line_stripped
+                line_new = line_new.rstrip()
 
             if args.debug:
-                _print_debug("Indent Change", indent_change)
-
-            # Apply indent reductions before printing
-            if indent_change < 0:
-                indent_level += indent_change
-
-            if curlyout:
-                indent_level += -1
-
-            line_new = (INDENT * indent_level) + line_stripped
-            line_new = line_new.rstrip()
-
-            if args.debug:
-                _print_debug("Edited Line", line_new)
+                _print_debug("Edited Line", line_new, debug_comment)
 
             # Write output
             if args.action == 'reformat' and file_output:
@@ -128,15 +155,16 @@ def main():
                         print(("%3d:" % line_number) + Fore.GREEN + ("%s" % line_new) + Fore.RESET)
                         print("")
 
-            # Apply indent increases after printing
-            if indent_change > 0:
-                indent_level += indent_change
+            if not in_annotation:
+                # Apply indent increases after printing
+                if indent_change > 0:
+                    indent_level += indent_change
 
-            if curlyout:
-                indent_level += 1
+                if curlyout:
+                    indent_level += 1
 
             if args.debug:
-                _print_debug("Ending Indent", indent_level)
+                _print_debug("Ending Indent", indent_level, debug_comment)
 
     if failedlines:
         if args.action == 'check':
