@@ -114,7 +114,7 @@ def main():
                 cleanline = RE_COMMENT.sub('# IGNORED COMMENT', cleanline)
                 startmatch = re.findall(r'[{(]', cleanline)
                 endmatch = re.findall(r'[})]', cleanline)
-                curlyout = re.search(r'(^[)}])(.*)([{(])', cleanline)
+                curlyout = re.search(r'(^[)}])(.*)([{(]$)', cleanline)
                 if args.debug:
                     _print_debug("Cleaned line", cleanline)
 
