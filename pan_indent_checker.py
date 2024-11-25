@@ -85,6 +85,7 @@ def main():
     colorama_init(strip=(not supports_color()))
 
     with open(args.input, 'r+') as file_input:
+        print(args.input)
         # Find annotations and reset pointer
         annotations = find_annotation_blocks(file_input.read())
         file_input.seek(0)
